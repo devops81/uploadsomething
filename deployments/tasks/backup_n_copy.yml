@@ -1,0 +1,30 @@
+---
+  - command: rsync -avSA "{{ common_path }}/webapps/" "{{ common_path }}/webapps.ansible/"  # backup webapps directory
+  
+  - name: Remove Old packages
+    file:
+      path: "{{ item }}"
+      state: absent
+    ignore_errors: yes
+    with_items:
+        - "{{ common_path }}/webapps/{{ common_name }}"
+        - "{{ common_path }}/webapps/{{ common_name }}.war"
+        - "{{ common_path }}/temp"
+        - "{{ common_path }}/work"
+    
+  - name: Create temp and work
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: "{{ common_user }}"
+      group: "{{ common_user }}"
+    with_items:
+      - "{{ common_path }}/work"
+      - "{{ common_path }}/temp" 
+
+  - name: Copy new packages "{{ common_name }}.war"
+    copy:
+      src: "{{ package_path }}/{{ common_name }}.war"
+      dest: "{{ common_path }}/webapps/{{ common_name }}.war"
+      owner: "{{ common_user }}"
+      group: "{{ common_user }}"

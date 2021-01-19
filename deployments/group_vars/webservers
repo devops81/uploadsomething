@@ -1,0 +1,6 @@
+packagex:
+  path: /opt/tomcat-packageX
+  name: packageX
+  service: tomcat-packageX.service
+  user:root
+  old_name: packageX.ear

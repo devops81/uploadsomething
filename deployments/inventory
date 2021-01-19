@@ -1,0 +1,9 @@
+[web]
+webserver1
+webserver2
+webserver3
+webserver4
+
+[db]
+dbserver1
+dbserver2

@@ -1,0 +1,42 @@
+---
+- name: deploy packagex
+  hosts: webservers
+  remote_user: ansible-user
+  become: true
+  serial: 2
+  gather_facts: no 
+
+ vars_files:
+    - group_vars/webservers
+    - group_vars/all 
+
+  tasks:
+  
+    - name: check files and rename
+      import_tasks: tasks/rename_tomcat_package.yml
+      vars:
+        - old_filename: "{{ packagex.old_name }}"
+        - filename: "{{ packagex.name }}"
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Stop tomcat service
+      import_tasks: tasks/stop_tomcat_service.yml
+      vars:
+        common_service: "{{ packagex.service }}"
+        common_path: "{{ packagex.path }}"
+      tags: stop_all    ## this is useful if you want to stop all the tomcats at once
+
+    - name: backup and copy packages
+      import_tasks: tasks/backup_n_copy.yml
+      vars:
+        common_path: "{{ packagex.path }}"
+        common_name: "{{ packagex.name }}"
+        common_user: "{{ packagex.user }}"
+        
+    - name: start and wait till service come up
+      import_tasks: tasks/start_tomcat_service.yml
+      vars:
+        common_path: "{{ packagex.path }}"
+        common_service: "{{ packagex.service }}"
+      tags: start_all   ## this is useful if you want to start all the tomcats at once

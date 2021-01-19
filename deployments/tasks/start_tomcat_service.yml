@@ -1,0 +1,10 @@
+---
+  - name: start tomcat service
+    systemd:
+      name: "{{ common_service }}"
+      state: started 
+
+  - name: Waiting till service is available
+    wait_for:
+      path: "{{ common_path }}/logs/catalina.out"
+      search_regex: "Server startup in"
